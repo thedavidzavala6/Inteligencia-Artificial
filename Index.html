@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>David Zavala — IA Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      --pink:        #fc3c73;
+      --pink-soft:   #ff6b9d;
+      --pink-pale:   #ffb3cc;
+      --pink-glow:   rgba(252, 60, 115, 0.22);
+      --bg:          #000000;
+      --bg-card:     #141414;
+      --bg-card-h:   #1c1c1c;
+      --border:      rgba(255,255,255,0.07);
+      --border-pink: rgba(252, 60, 115, 0.28);
+      --text:        #ffffff;
+      --text-2:      rgba(255,255,255,0.52);
+      --text-3:      rgba(255,255,255,0.28);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Noise */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Blobs */
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(160px); pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: saturate(180%) blur(28px);
+      -webkit-backdrop-filter: saturate(180%) blur(28px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 14px; font-weight: 600; letter-spacing: -.015em;
+    }
+
+    .nav-icon {
+      width: 26px; height: 26px;
+      background: linear-gradient(145deg, #fc3c73, #a8003d);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #fff;
+      box-shadow: 0 0 16px rgba(252,60,115,.45);
+    }
+
+    .nav-pill {
+      font-size: 11px; font-weight: 500;
+      color: var(--text-3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 12px;
+      letter-spacing: .02em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 10;
+      min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+    }
+
+    .eyebrow {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--pink);
+      margin-bottom: 20px;
+      opacity: 0; animation: up .6s ease .15s forwards;
+    }
+
+    .hero-h1 {
+      font-size: clamp(52px, 10vw, 96px);
+      font-weight: 700;
+      letter-spacing: -.045em;
+      line-height: 1;
+      margin-bottom: 24px;
+      opacity: 0; animation: up .7s ease .3s forwards;
+    }
+
+    .hero-h1 em {
+      font-style: normal;
+      background: linear-gradient(130deg, #fc3c73 0%, #ff8fab 50%, #fc3c73 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: shimmer 5s linear infinite;
+    }
+
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    .hero-sub {
+      max-width: 480px;
+      font-size: 16px; font-weight: 300; line-height: 1.7;
+      color: var(--text-2);
+      margin-bottom: 48px;
+      opacity: 0; animation: up .7s ease .45s forwards;
+    }
+
+    .hero-stats {
+      display: flex; gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      opacity: 0; animation: up .7s ease .6s forwards;
+    }
+
+    .stat {
+      padding: 16px 32px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+
+    .stat-n {
+      font-size: 26px; font-weight: 700; letter-spacing: -.03em;
+      background: linear-gradient(135deg, #fc3c73, #ff8fab);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .stat-l {
+      font-size: 10px; color: var(--text-3);
+      letter-spacing: .1em; text-transform: uppercase;
+    }
+
+    /* scroll arrow */
+    .arrow {
+      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+      color: var(--text-3); font-size: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      letter-spacing: .1em; text-transform: uppercase;
+      opacity: 0; animation: fadeIn .8s ease 1.3s forwards, bob 2.2s ease-in-out 2.1s infinite;
+    }
+
+    @keyframes bob {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* hero divider */
+    .h-divider {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(252,60,115,.2), transparent);
+    }
+
+    /* ── SECTION ── */
+    .wrap {
+      position: relative; z-index: 10;
+      max-width: 1080px; margin: 0 auto; padding: 80px 20px 120px;
+    }
+
+    .sec-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .sec-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--text-3); white-space: nowrap;
+    }
+
+    .sec-rule {
+      flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── GRID ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 26px;
+      display: flex; flex-direction: column; gap: 16px;
+      position: relative; overflow: hidden;
+      transition: border-color .3s, box-shadow .3s, transform .3s, background .3s;
+      opacity: 0; animation: up .6s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: .1s; }
+    .card:nth-child(2) { animation-delay: .2s; }
+    .card:nth-child(3) { animation-delay: .3s; }
+    .card:nth-child(4) { animation-delay: .4s; }
+
+    /* glow spot on hover */
+    .card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 20% 10%, rgba(252,60,115,.09), transparent 60%);
+      opacity: 0; transition: opacity .4s;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card:hover {
+      border-color: var(--border-pink);
+      background: var(--bg-card-h);
+      box-shadow: 0 0 0 1px rgba(252,60,115,.1),
+                  0 24px 64px rgba(0,0,0,.7),
+                  0 0 48px rgba(252,60,115,.06);
+      transform: translateY(-4px);
+    }
+
+    .c-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+
+    .c-icon {
+      width: 46px; height: 46px; border-radius: 13px;
+      background: rgba(252,60,115,.1);
+      border: 1px solid rgba(252,60,115,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; color: var(--pink-soft);
+      transition: background .3s, box-shadow .3s;
+    }
+
+    .card:hover .c-icon {
+      background: rgba(252,60,115,.18);
+      box-shadow: 0 0 22px rgba(252,60,115,.22);
+    }
+
+    .c-badge {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--pink);
+      background: rgba(252,60,115,.1);
+      border: 1px solid rgba(252,60,115,.18);
+      border-radius: 30px;
+      padding: 3px 10px;
+    }
+
+    .c-title {
+      font-size: 20px; font-weight: 600;
+      letter-spacing: -.025em; line-height: 1.2;
+    }
+
+    .c-desc {
+      font-size: 13px; font-weight: 300; line-height: 1.65;
+      color: var(--text-2); flex: 1;
+    }
+
+    .c-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .c-tag {
+      font-size: 10.5px; font-weight: 500;
+      color: var(--text-3);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+
+    /* ── BUTTON ── */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 18px; border-radius: 12px;
+      font-size: 13px; font-weight: 600; letter-spacing: -.01em;
+      text-decoration: none; color: #fff;
+      background: var(--pink);
+      box-shadow: 0 4px 18px rgba(252,60,115,.32);
+      transition: background .25s, box-shadow .25s, transform .2s;
+    }
+
+    .btn:hover {
+      background: #ff5283;
+      box-shadow: 0 6px 26px rgba(252,60,115,.55);
+      transform: scale(1.025);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 10;
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .f-text {
+      font-size: 11.5px; color: var(--text-3); letter-spacing: .03em;
+    }
+
+    .f-text b { color: var(--pink); font-weight: 500; }
+
+    /* ── Keyframes ── */
+    @keyframes up {
+      from { opacity:0; transform: translateY(18px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { to { opacity:1; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .nav-pill { display: none; }
+      .hero-stats { flex-direction: column; border-radius: 14px; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Blobs -->
+  <div class="blob" style="width:700px;height:700px;background:rgba(252,60,115,0.1);top:-250px;left:-250px;"></div>
+  <div class="blob" style="width:500px;height:500px;background:rgba(252,60,115,0.06);bottom:0;right:-200px;"></div>
+  <div class="blob" style="width:350px;height:350px;background:rgba(160,0,60,0.05);top:55%;left:38%;"></div>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-icon"><i class="fa-solid fa-brain"></i></div>
+      David Zavala
+    </div>
+    <span class="nav-pill">Inteligencia Artificial &nbsp;·&nbsp; Parcial 1</span>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <p class="eyebrow">
+      <i class="fa-solid fa-graduation-cap" style="margin-right:6px;opacity:0.8;"></i>
+      Portafolio de Evidencias
+    </p>
+
+    <h1 class="hero-h1">
+      Inteligencia<br/><em>Artificial.</em>
+    </h1>
+
+    <p class="hero-sub">
+      Actividades y proyectos del primer parcial. Desde exploración de datos
+      hasta modelos de machine learning, cada entrega construye el camino hacia la IA.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-n">4</span>
+        <span class="stat-l">Entregas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">2</span>
+        <span class="stat-l">Notebooks</span>
+      </div>
+      <div class="stat">
+        <span class="stat-n">2</span>
+        <span class="stat-l">Reportes</span>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <i class="fa-solid fa-chevron-down"></i>
+      Ver actividades
+    </div>
+
+    <div class="h-divider"></div>
+  </section>
+
+  <!-- ══ CARDS ══ -->
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-label">Actividades del Parcial</span>
+      <div class="sec-rule"></div>
+    </div>
+
+    <div class="cards">
+
+      <!-- 1 -->
+      <div class="card">
+        <div class="c-top">
+          <div class="c-icon"><i class="fa-solid fa-chart-bar"></i></div>
+          <span class="c-badge">Act. 1</span>
+        </div>
+        <h3 class="c-title">Análisis de Datos</h3>
+        <p class="c-desc">
+          Exploración de datasets con Python. Visualizaciones estadísticas y manejo de estructuras de datos usando pandas y matplotlib.
+        </p>
+        <div class="c-tags">
+          <span class="c-tag">Python</span>
+          <span class="c-tag">Pandas</span>
+          <span class="c-tag">Matplotlib</span>
+          <span class="c-tag">Jupyter</span>
+        </div>
+        <a href="Act1.ipynb" target="_blank" class="btn">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+          Abrir Notebook
+        </a>
+      </div>
+
+      <!-- 2 -->
+      <div class="card">
+        <div class="c-top">
+          <div class="c-icon"><i class="fa-brands fa-google"></i></div>
+          <span class="c-badge">Act. 1.3</span>
+        </div>
+        <h3 class="c-title">Configuración de Entorno</h3>
+        <p class="c-desc">
+          Configuración de Google Colab como entorno de desarrollo para proyectos de IA. Instalación de librerías y organización del flujo de trabajo.
+        </p>
+        <div class="c-tags">
+          <span class="c-tag">Google Colab</span>
+          <span class="c-tag">Entorno Dev</span>
+          <span class="c-tag">PDF</span>
+        </div>
+        <a href="Act 1.3 - Colab.pdf" target="_blank" class="btn">
+          <i class="fa-solid fa-file-pdf" style="font-size:10px;"></i>
+          Ver PDF
+        </a>
+      </div>
+
+      <!-- 3 -->
+      <div class="card">
+        <div class="c-top">
+          <div class="c-icon"><i class="fa-solid fa-route"></i></div>
+          <span class="c-badge">Act. 2</span>
+        </div>
+        <h3 class="c-title">Algoritmos de Búsqueda</h3>
+        <p class="c-desc">
+          Implementación de BFS, DFS y A* sobre problemas de grafos. Comparación de rendimiento y análisis de complejidad computacional.
+        </p>
+        <div class="c-tags">
+          <span class="c-tag">BFS / DFS</span>
+          <span class="c-tag">A*</span>
+          <span class="c-tag">Grafos</span>
+          <span class="c-tag">Python</span>
+        </div>
+        <a href="Act_2.ipynb - Colab.pdf" target="_blank" class="btn">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+          Abrir Notebook
+        </a>
+      </div>
+
+      <!-- 4 -->
+      <div class="card">
+        <div class="c-top">
+          <div class="c-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <span class="c-badge">Proyecto P1</span>
+        </div>
+        <h3 class="c-title">Regresión Lineal</h3>
+        <p class="c-desc">
+          Modelo de regresión lineal sobre datos reales. Preprocesamiento, entrenamiento, evaluación con R² y MSE, y visualización de predicciones.
+        </p>
+        <div class="c-tags">
+          <span class="c-tag">Machine Learning</span>
+          <span class="c-tag">Sklearn</span>
+          <span class="c-tag">Regresión</span>
+          <span class="c-tag">PDF</span>
+        </div>
+        <a href="P P1 Regresión.pdf" target="_blank" class="btn">
+          <i class="fa-solid fa-file-pdf" style="font-size:10px;"></i>
+          Ver PDF
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <p class="f-text">David Zavala &nbsp;·&nbsp; Inteligencia Artificial &nbsp;·&nbsp; Hecho con <b>♥</b> y mucho Colab</p>
+  </footer>
+
+</body>
+</html>
