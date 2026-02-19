@@ -1,0 +1,61 @@
+# ──────────────────────────────────────────────────────────────
+# BLOQUE 6 · MÉTRICAS DE EVALUACIÓN (Train vs Test)
+# ──────────────────────────────────────────────────────────────
+
+y_pred_train = modelo_lr.predict(X_train)
+y_pred       = modelo_lr.predict(X_test)
+residuos     = y_test - y_pred
+
+r2_train   = r2_score(y_train, y_pred_train)
+r2_test    = r2_score(y_test,  y_pred)
+mae        = mean_absolute_error(y_test, y_pred)
+diferencia = r2_train - r2_test
+
+print("\n" + "="*45)
+print("   RESULTADOS — Regresión Lineal Múltiple")
+print("="*45)
+print(f"   R² Train              : {r2_train:.4f}")
+print(f"   R² Test               : {r2_test:.4f}")
+print(f"   Diferencia (Train-Test): {diferencia:.4f}")
+print(f"   MAE (Error Abs. Medio): {mae:.4f} kg/m²")
+print("="*45)
+
+# En regresión lineal una diferencia pequeña es lo esperado
+if diferencia < 0.05:
+    estado = "Sin overfitting ✓ — modelo estable"
+elif diferencia < 0.15:
+    estado = "Overfitting leve ⚠️  — aceptable"
+else:
+    estado = "Overfitting alto ✗  — revisar features"
+
+print(f"   Overfitting           : {estado}")
+
+# Gráfica comparativa R² Train vs Test
+fig, ax = plt.subplots(figsize=(5, 4))
+
+barras = ax.bar(
+    ['R² Train', 'R² Test'],
+    [r2_train, r2_test],
+    color=['#00e5a0', '#4f8eff'],
+    edgecolor='white', linewidth=0.5, width=0.4
+)
+
+for bar, val in zip(barras, [r2_train, r2_test]):
+    ax.text(bar.get_x() + bar.get_width()/2, val + 0.01,
+            f"{val:.4f}", ha='center', fontsize=11,
+            fontweight='bold', color='white')
+
+ax.set_ylim(0, 1.1)
+ax.set_title("Comparativa R² — Train vs Test\nRegresión Lineal Múltiple",
+             fontsize=12, fontweight='bold', pad=12)
+ax.set_ylabel("R² Score", fontsize=10)
+ax.axhline(y=1.0, color='white', linestyle=':', alpha=0.3)
+ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig("lineal_r2_train_vs_test.png", dpi=150, bbox_inches='tight')
+plt.show()
+print("✓ Gráfica guardada → lineal_r2_train_vs_test.png")
+
+# Reasignar r2 para que los bloques siguientes lo usen correctamente
+r2 = r2_test
